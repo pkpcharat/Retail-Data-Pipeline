@@ -4,45 +4,16 @@ An end-to-end automated data pipeline for retail transaction data. This project 
 
 ---
 
-## 🏗️ Architecture & Data Flow
+## Architecture & Data Flow
 
 The pipeline follows the industry-standard Medallion Architecture, ensuring data quality and traceability at every stage.
 
-```mermaid
-graph TD
-    subgraph "External Source"
-        CSV[Raw CSV Dataset]
-    end
 
-    subgraph "Airflow DAG: retail_data_pipeline"
-        Task1[ingest_bronze]
-        Task2[data_quality_check]
-        Task3[transform_silver]
-        Task4[reconciliation_check]
-        Task5[gold_aggregation]
-    end
+</br> **Architecture flow Picture**
 
-    subgraph "Storage (Medallion Layers)"
-        Bronze[(Bronze Layer: Raw Parquet)]
-        Silver[(Silver Layer: Cleaned)]
-        Gold[(Gold Layer: Aggregated)]
-        Reports[Quality/Recon Reports]
-    end
+<img width="700" height="709" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/697b7955-30fb-494c-b1e7-a1d9feb02079" />
 
-    CSV --> Task1
-    Task1 --> Bronze
-    Bronze --> Task2
-    Task2 --> Reports
-    Task2 --> Task3
-    Task3 --> Silver
-    Silver --> Task4
-    Bronze -.-> Task4
-    Task4 --> Reports
-    Task3 --> Task5
-    Task5 --> Gold
-```
-
-### 1. 🥉 Bronze Layer (Raw Ingestion)
+### 1. Bronze Layer (Raw Ingestion)
 - **Source:** `/opt/airflow/data/bronze/Retail_Transactions_Dataset.csv`
 - **Process:** `spark_jobs/ingest.py`
 - **Logic:**
@@ -51,7 +22,7 @@ graph TD
     - Partitions data by the Airflow execution date (`ds`).
 - **Storage:** `data/bronze/Date=YYYY-MM-DD/transactions.parquet`
 
-### 2. 🥈 Silver Layer (Cleaned & Anonymized)
+### 2. Silver Layer (Cleaned & Anonymized)
 - **Process:** `spark_jobs/transform.py`
 - **Cleaning Logic:**
     - Deduplication based on the full record.
@@ -62,7 +33,7 @@ graph TD
     - Added `avg_price_per_item` (`Total_Cost / Total_Items`).
 - **Storage:** `data/silver/Date=YYYY-MM-DD/transactions_cleaned.parquet`
 
-### 3. 🥇 Gold Layer (Business Insights)
+### 3. Gold Layer (Business Insights)
 - **Process:** `spark_jobs/gold_aggregation.py`
 - **Business Logic:**
     - Aggregates total revenue per product.
@@ -71,11 +42,11 @@ graph TD
 
 ---
 
-## 🛡️ Data Governance & Quality Control
+## Data Governance & Quality Control
 
 We implement two layers of validation to ensure the integrity of our data.
 
-### ✅ Data Quality Checks (`data_quality.py`)
+### Data Quality Checks (`data_quality.py`)
 Runs automatically after ingestion to flag issues:
 - **Null Checks:** Validates all columns for missing values.
 - **Uniqueness:** Ensures `Transaction_ID` is unique.
@@ -84,7 +55,7 @@ Runs automatically after ingestion to flag issues:
     - `Payment_Method` must be one of: `Cash`, `Credit Card`, `Debit Card`, `UPI`.
 - **Reporting:** Generates a CSV report in `data/quality/Date=YYYY-MM-DD/data_quality_report.csv`.
 
-### ⚖️ Reconciliation Check (`reconciliation_check.py`)
+### Reconciliation Check (`reconciliation_check.py`)
 Compares the input (Bronze) vs. output (Silver) to track data loss:
 - Calculates row count differences.
 - Ensures Silver never has more rows than Bronze (prevents duplication bugs).
@@ -92,17 +63,7 @@ Compares the input (Bronze) vs. output (Silver) to track data loss:
 
 ---
 
-## 🛠️ Technical Stack
-
-- **Orchestration:** Apache Airflow 3.2.1
-- **Processing:** Python 3.12 (Pandas, PyArrow, FastParquet)
-- **Database:** PostgreSQL 16 (Airflow Metadata)
-- **Messaging:** Redis (Celery Broker)
-- **Infrastructure:** Docker & Docker Compose
-
----
-
-## 🚀 Deployment Guide
+## Deployment Guide
 
 ### 1. Environment Preparation
 Ensure your system meets the minimum requirements (4GB RAM, 2 CPUs).
@@ -126,11 +87,9 @@ docker-compose up -d
 
 ### 4. Monitoring
 - **Airflow UI:** `http://localhost:8080`
-- **Flower (Celery UI):** `http://localhost:5555` (Optional profile)
-
 ---
 
-## 📊 Directory Structure Detailed
+## Directory Structure Detailed
 
 ```text
 ├── config/              # Airflow configurations (airflow.cfg)
@@ -147,9 +106,9 @@ docker-compose up -d
 
 ---
 
-## 🔮 Future Roadmap
+## Future Roadmap
 
-- [ ] **PySpark Integration:** Swap Pandas for PySpark in `spark_jobs/` to handle TB-scale data.
-- [ ] **Delta Lake:** Implement Delta Lake for ACID transactions and time travel.
-- [ ] **CI/CD:** GitHub Actions to run tests and auto-deploy DAGs.
-- [ ] **Dashboarding:** Connect Gold layer to Superset or Metabase.
+- **PySpark Integration:** Swap Pandas for PySpark in `spark_jobs/` to handle TB-scale data.
+- **Delta Lake:** Implement Delta Lake for ACID transactions and time travel.
+- **CI/CD:** GitHub Actions to run tests and auto-deploy DAGs.
+- **Dashboarding:** Connect Gold layer to Superset or Metabase.
