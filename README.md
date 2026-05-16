@@ -13,6 +13,9 @@ The pipeline follows the industry-standard Medallion Architecture, ensuring data
 
 <img width="700" height="709" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/697b7955-30fb-494c-b1e7-a1d9feb02079" />
 
+</br> **DAG AIRFLOW**
+<img width="915" height="177" alt="Screenshot 2569-05-16 at 10 03 12" src="https://github.com/user-attachments/assets/53ccaff5-df67-4c17-97aa-7d022760d6e6" />
+
 ### 1. Bronze Layer (Raw Ingestion)
 - **Source:** `/opt/airflow/data/bronze/Retail_Transactions_Dataset.csv`
 - **Process:** `spark_jobs/ingest.py`
@@ -21,6 +24,8 @@ The pipeline follows the industry-standard Medallion Architecture, ensuring data
     - Parses dates using `dayfirst=True`.
     - Partitions data by the Airflow execution date (`ds`).
 - **Storage:** `data/bronze/Date=YYYY-MM-DD/transactions.parquet`
+<img width="755" height="99" alt="Screenshot 2569-05-16 at 10 12 19" src="https://github.com/user-attachments/assets/f0c7f1e1-5b32-4501-a704-80e4a24c2fee" />
+
 
 ### 2. Silver Layer (Cleaned & Anonymized)
 - **Process:** `spark_jobs/transform.py`
@@ -32,6 +37,8 @@ The pipeline follows the industry-standard Medallion Architecture, ensuring data
 - **Feature Engineering:**
     - Added `avg_price_per_item` (`Total_Cost / Total_Items`).
 - **Storage:** `data/silver/Date=YYYY-MM-DD/transactions_cleaned.parquet`
+<img width="760" height="93" alt="Screenshot 2569-05-16 at 10 12 36" src="https://github.com/user-attachments/assets/ce106c01-babb-4b25-8f0e-bde235b37b3d" />
+
 
 ### 3. Gold Layer (Business Insights)
 - **Process:** `spark_jobs/gold_aggregation.py`
@@ -39,6 +46,8 @@ The pipeline follows the industry-standard Medallion Architecture, ensuring data
     - Aggregates total revenue per product.
     - Columns: `Product`, `Revenue`.
 - **Storage:** `data/gold/Date=YYYY-MM-DD/sales_summary.parquet`
+<img width="439" height="87" alt="Screenshot 2569-05-16 at 10 13 03" src="https://github.com/user-attachments/assets/a2824dea-9829-4161-b85c-6045a9d94afb" />
+
 
 ---
 
