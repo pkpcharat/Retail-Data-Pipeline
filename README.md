@@ -8,6 +8,18 @@ An end-to-end automated data pipeline for retail transaction data. This project 
 
 The pipeline follows the industry-standard Medallion Architecture, ensuring data quality and traceability at every stage.
 
+## Key Features
+
+* **Apache Airflow ETL Orchestration**
+  Built an automated batch ETL pipeline using Apache Airflow to manage task scheduling, dependency orchestration, and daily data processing workflows.
+
+* **Medallion Data Architecture**
+  Implemented Bronze, Silver, and Gold layers with partitioned parquet storage to support scalable, organized, and analytics-ready data processing.
+
+* **Data Quality & PII Protection**
+  Developed automated data quality validation checks (nulls, duplicates, invalid records) and applied SHA-256 hashing to anonymize sensitive customer information.
+
+
 
 </br> **Architecture flow Picture**
 
@@ -119,5 +131,4 @@ docker-compose up -d
 
 - **PySpark Integration:** Swap Pandas for PySpark in `spark_jobs/` to handle TB-scale data.
 - **Delta Lake:** Implement Delta Lake for ACID transactions and time travel.
-- **CI/CD:** GitHub Actions to run tests and auto-deploy DAGs.
 - **Dashboarding:** Connect Gold layer to Superset or Metabase.
